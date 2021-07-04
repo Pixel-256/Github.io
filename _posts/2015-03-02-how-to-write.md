@@ -3,7 +3,7 @@ layout: post
 title: Aim at or Aim for?
 date: 2021-7-03
 categories: blog
-tags: 
+tags: [标签一,标签二]
 description: 
 ---
 
