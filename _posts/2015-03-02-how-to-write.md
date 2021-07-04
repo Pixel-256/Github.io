@@ -1,13 +1,38 @@
 ---
 layout: post
-title: 这是一篇博客文章模板
-date: 2015-3-02
+title: Aim at or Aim for?
+date: 2015-7-03
 categories: blog
 tags: [标签一,标签二]
-description: 文章金句。
+description: 
 ---
 
-这里是博客正文。
+***<font size=5>What's the difference between "aim for" and "aim at"?</font>***  
+* "Aim for" is trying to get *yourself* somewhere.
+* "Aim at" is trying to get *something* somewhere.
+
+**The details**: 
+Aim for:
+This phrase is usually all about personal goal setting. We often use it to talk about our ultimate/final goal.
+>*I'm going to **aim for** full marks. I can do it!*
+>
+>*He is **aiming for** the stars*
+
+We can also aim for a date when we’re making plans with people:
+>*Let's **aim for** the 28th to finish the project.*
+
+Aim at:
+“Aim at” can generally be used in two ways. Both ways are about getting something somewhere.
+
+The first way is quite aggressive and is about attacking something or someone. We often think about guns with this verb, but also about personal attacks:
+>*He **aimed** his anger **at** his boss.*
+>
+>*Try to **aim at** the center of the target.*
+
+The second way we can use this phrase is in advertising or media. We talk about how a product, project, TV show or band can be aimed at a certain type of customer/audience:
+>*This course is **aimed at** higher-level students.*
+>
+>*I think fast food adverts that are **aimed at** children should be banned.*
 
 
 
