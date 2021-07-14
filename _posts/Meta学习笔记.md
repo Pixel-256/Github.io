@@ -1,3 +1,11 @@
+---
+layout: post
+title: Aim at or Aim for?
+date: 2021-7-03
+categories: blog
+tags: [标签一,标签二]
+description: 
+---
 # Meta分析的简介
 >“The problems are solved, not by giving new information, but by arranging what we have known since long.”
 >
