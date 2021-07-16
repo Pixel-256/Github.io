@@ -1,39 +1,159 @@
 ---
 layout: post
-title: Aim at or Aim for?
-date: 2021-7-03
+title: Meta学习笔记
+date: 2021-7-16
 categories: blog
 tags: [标签一,标签二]
 description: 
 ---
 
-***<font size=5>What's the difference between "aim for" and "aim at"?</font>***  
-* "Aim for" is trying to get *yourself* somewhere.
-* "Aim at" is trying to get *something* somewhere.
-
-**The details**: 
-Aim for:
-This phrase is usually all about personal goal setting. We often use it to talk about our ultimate/final goal.
->*I'm going to **aim for** full marks. I can do it!*
+# Meta分析的简介
+>“The problems are solved, not by giving new information, but by arranging what we have known since long.”
 >
->*He is **aiming for** the stars*
+>– **Ludwig Wittgenstein**, *Philosophical Investigations*
+>  这篇学习笔记基于参考书[**Doing Meta-Analysis in R**: A Hands-on Guide](https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/)[<sup>1</sup>](#refer)
+## Meta从何而来
+对于某个待解决的临床问题，临床试验结果无疑是最可靠也是最主要的说明证据。其中大型临床试验的证据等级更高。但受限于人力经济和时间成本，大规模临床试验往往难以开展，其数据也难以获取。
 
-We can also aim for a date when we’re making plans with people:
->*Let's **aim for** the 28th to finish the project.*
+这时我们想，能不能**合并**10个样本量为100的临床试验，达到和样本量为1000临床试验等同的效果？这时Meta分析就诞生了。
 
-Aim at:
-“Aim at” can generally be used in two ways. Both ways are about getting something somewhere.
+Meta分析的**本质**就是找到所有已发表的针对同一临床问题的试验，然后将其数据进行合并，得到一个更为精确更为可信的结论。
 
-The first way is quite aggressive and is about attacking something or someone. We often think about guns with this verb, but also about personal attacks:
->*He **aimed** his anger **at** his boss.*
+Meta分析之父 Gene V. Glass 将其称为“研究的研究”(*"analysis of analyses"*)[<sup>2</sup>](#refer) 也就是说，传统的研究，它的研究对象是实验动物、病人、样本等；而Meta分析，它的研究对象是各个**试验的结果**本身。
+
+那么，Meta分析具体是如何工作的呢？
+## 第一步，翻译
+Meta分析的最终目的是合并所有的试验结果，得到一个有效结论。但是如果不同的研究数据记录形式不同，其背后的“说明效力”也不同，就不能将其直接合并。用书上的话来说，就是我们不能 " *Combine apples and oranges.* "
+
+这就要求我们对获得的实验数据做一定的处理，将其转化为一个中间媒介，它可以通过一定的计算从原始数据中**直接得出**，它是**量化**的，能直接反映数据的“效应”大小；同时，也可以和其他试验的出的媒介值进行横向“**加和**”，作为往后数据“合并”的基础。
+
+这个中间媒介便是“**效应量**”—— [Effect Size](https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/effects.html)
+如上所述，它直接由统计量(完全由样本决定的量[<sup>3</sup>](#refer) 如n,mean,sd等)得来，具有Comparable，Computable，Reliable，Interpretable 的特点。
+
+效应量有很多，根据不同的试验特征和临床问题应选用不同的效应量。这里先举个例子。
+<div id = "MD"></div>
+
+在设计有对照组的连续型变量试验中，可以使用MD(Mean Differences)作为效应量，它的计算公式很简单
+$MD_\text{between}=\displaystyle{\overline{x}_1 - \overline{x}_2}$
+
+目的是通过对照组和试验组的数据均值之差来反映效应的大小
+>  SMD$\approx$ 0.2: 微小效应
+>  SMD$\approx$ 0.5: 中等效应
+>  SMD$\approx$ 0.8：高效应
+>(SMD是[标准化](https://zhuanlan.zhihu.com/p/370628898)后的MD)
+
+其标准误(Standard Error)的公式
+
+$SE_\text{MD}=s_\text{pooled}\sqrt{\displaystyle{\frac{1}{n_1}+\frac{1}{n_2}}}$
+
+反映的是得到的SMD的准确程度*，这里后面合并时要用到。
+
+计算的具体的数学过程不重要，重要的是我们发现，其实SMD的计算只用了几组数据，各组的样本均值 $\overline{x}$，样本量大小$n$，标准差$s$这些反映总体分布的数据（所以不用担心，Meta分析的数据提取工作量没有那么大）。
+可以说，从信息量上看，效应量对整体实验结果的翻译，实际上是一种“**压缩**”。
+
+常见的效应量还有OR，RR，HR等等，和SMD类似，都只用到了部分的数据，只是计算公式有差异——这在SPSS等统计软件上往往只是按钮位置的差别。
+## 第二步，合并
+我们通过计算得到了各个试验数据的效应量和标准误([类似于方差](https://www.zhihu.com/question/22864111/answer/250542567))
+现在我们要做的是把他们合并。
+
+Meta分析的统计思想是（以连续性变量数据为例），一组数据的方差（或标准误）大小反映了整个研究的准确程度，方差越小越精确；而更精确的数据理应在合并中占据更大的**权值**——也就是份量。
+
+>I是总的试验数，$w_i$为第$i$个试验的权值，$\hat{\theta}_i$是第i个试验的效应量,$\hat{\theta}$是合并得到的总效应量
 >
->*Try to **aim at** the center of the target.*
-
-The second way we can use this phrase is in advertising or media. We talk about how a product, project, TV show or band can be aimed at a certain type of customer/audience:
->*This course is **aimed at** higher-level students.*
+>$w_i=\displaystyle{\frac{1}{s^2_i}}$
 >
->*I think fast food adverts that are **aimed at** children should be banned.*
+>$\hat{\theta}=\displaystyle{\frac{\sum_\text{i=1}^I\hat{\theta}_iw_i}{\sum_\text{i=1}^Iw_i}}$
+>
+>(固定效应模型，后续说明)
 
+没错，其实Meta的合并方法就是我们熟悉的**加权平均**，将效应量按**倒方差**为权值加权。
+
+我们先来看看合并后的结果是如何呈现的——**森林图**Forest Plot
+
+![w6MBA.png](https://e.im5i.com/2021/07/14/w6MBA.png)
+
+图的左侧呈现的是被合并的各个研究的名称，其中提取得到的原始数据(两组的均值Mean,标准差SD，样本量Total)，以及计算得到的效应量(这里使用的是上文介绍的[Mean Difference](#MD))；
+
+图的左下方加粗的Total是合并后的得到的样本总量和效应量，以及组间异质性Heterogeneity,后文详细介绍。
+
+图的右侧就是森林图，森林图的下方坐标指示效应量的大小，正值越大则表示越倾向于resection组，负值越大则表示越倾向于morcellation组。
+我们可以看到图中对映着每一个研究的位置，有一条一条的横线，横线中心还有大小不一的方块；图的中央还有一条垂直的竖线，整个图形组合起来有点像树的树干和枝叶。
+
+![wBGwx.png](https://e.im5i.com/2021/07/15/wBGwx.png)
+
+正如上图所示，在横线上方块的中心点，也就是横线的中点，它投影在坐标轴上的位置就是这个研究效应量大小的点估计值；而横线所跨范围，代表着95%置信区间。方块的大小则代表着在合并时该效应量所占的权重$w_i$的大小；下面的大菱形即为合并后的效应量。
+中间的竖线也就是“树干”，叫做无效线reference line,它代表着在坐标轴上“没有实际效应”的值。上面的横线如与无效线相交，就代表着在估计范围内，该研究的实际效应有可能不存在；如果下面的菱形触碰了无效线，则说明整个合并的结果是没有显著效应的。
+例如图中无效线的对应值是0，MD为0即对照组和实验组的均值相同，意味着不同干预手段对疾病的效果差异不存在。
+### 固定效应模型和随机效应模型，以及异质性
+森林图中的内容大体已经说明，还留有几个比较复杂的需要单独提出。这三个概念围绕着一个共同问题，就是“合并”的**质量**究竟如何：固定效应模型和随机效应模型的选择关乎着合并的质量；而异质性，则是对这个质量的一个量化评估，其大小与两种模型的选择无关。
+
+前面提到，[效应量](https://bookdown.org/MathiasHarrer/Doing_Meta_Analysis_in_R/effects.html#what-is-es)是一个人为定制的“媒介”变量，它既能反映原始统计量所代表的样本集中趋势，又是对实际效应大小的一种估计。
+
+在数学模型上，假定真实的效应量为$\theta$。第i个试验的真实效应量为$\theta_i$,估计效应量为$\hat{\theta}_i$，$\epsilon_r$代表抽样误差(Sampling Error)：
+
+$\hat{\theta}_i=\theta_i+\epsilon_r$
+
+也就是说Meta分析的模型中，将由统计量计算得的效应量$\hat{\theta}_i$对真实效应量$\theta_i$的偏离，解释为抽样过程产生了误差。抽样的过程是随机的，抽样和总体之间的分布差异造成了抽样误差，它的存在是不可避免的。而且根据大数定律，抽样的样本量越大往往越接近总体分布，抽样误差也就越小；这就是开头提到的大型临床试验的证据等级更高的原因之一，也是为什么做meta分析的理由之一。
+
+**固定效应模型**中，各个试验的$\theta_i$之间差别很小或不存在，它们都近似于$\theta$。公式可改写为：
+
+$\hat{\theta}_i=\theta+\epsilon_r$
+
+在固定效应模型下我们可以直接以权值为$w_i$进行合并得到最终的估计:
+
+$\hat{\theta}=\displaystyle{\frac{\sum_\text{i=1}^I\hat{\theta}_iw_i}{\sum_\text{i=1}^Iw_i}}$
+
+**随机效应模型**中，$\theta_i$之间是有差异的,差异来自很多方面，试验质量受试者基线特征等等，它们统称为组间异质性(Between-Study Heterogeneity)：
+
+$\theta_i=\theta+\zeta_i$
+$\hat{\theta_i}=\theta+\zeta_i+\epsilon_r$
+
+权值$w_i$也要做相应的改变：
+
+$w_i^*=\displaystyle{\frac{1}{s_k^2+\tau^2}}$
+
+![w3pYC.png](https://e.im5i.com/2021/07/16/w3pYC.png)
+对比随机效应模型和固定效应模型的森林图，可以发现随机模型中小样本量研究的权值更大；最终结果的置信区间更宽，更容易触碰无效线。这是模型中引入更多随机因素的结果。
+一般传统来说倾向于使用随机效应模型。固定效应模型仅适用于组间异质性低($I^2$<50%,p>0.05)，并且可以明确纳入的各个试验之间差异不大的情况下。不能因为想要得到“有效”的结果就随意更换模型。
+
+**组间异质性**的计算，以Cochran's $Q$为例：
+
+$Q=\sum^I_\text{i=1}w_i(\hat{\theta}_i-\hat{\theta})^2$
+
+$\hat{\theta}$是固定效应模型中合并得的总效应量，$\hat{\theta}_i$则是由统计量计算而得，$Q$估计的是随机效应模型中$\zeta$的效应。所以通过变换随机效应模型和固定效应模型是不会改变异质性的。
+
+Revman中估计异质性常用的统计量是$I^2$
+
+$I^2=\displaystyle{\frac{Q-(K-1)}{Q}}$
+
+$K$是纳入试验的总数
+>$I^2$ = 25% 为低异质性
+>$I^2$ = 50% 为中等异质性
+>$I^2$ = 75% 为高异质性
+
+异质性过大将直接影响合并结果的可信度，"Combine apples and oranges"是没有意义的。因此对于异质性过高的情况还需要进一步的分析。
+## 第三步，补充
+**1.解决异质性过高的问题**
+组间异质性来自很多因素，可以粗略地归为三类：基线特征异质性，试验设计异质性和统计学异质性。基线特征不同可能直接影响样本；实验设计异质性可以通过设计严谨的PICO原则和文献纳入排除标准来消除，也可以通过**偏倚风险**(risk of bias)评估工具来评价试验报告的质量；统计学异质性是最终呈现，它可以来自前两者，甚至也可以来自meta模型的自身缺陷。
+### 亚组分析和Meta回归
+基线特征包含许多变量，比如病人年龄，工作，收入，受教育程度，手术采用的器械是哪家公司提供的，执行手术的初级医生还是主任医师等等；如果挑选其中一个变量将试验进行分组，比如使用A公司手术器械的一组，B公司手术器械的一组，分别进行结果合并，然后对合并的结果进行统计学检验。如果各亚组内的异质性明显降低，且亚组之间的合并效应量存在明显差异，则说明选取的这个**变量**导致了高异质性。
+
+亚组分析的缺点在于，一次只能筛选一个变量，而异质性很可能是多个因素同时导致的。
+
+**Meta回归**则是将基线特征变量作为$x$，以该变量分成亚组中的合并统计量作为$y$，做简单的线性回归。它的好处在于可以同时纳入多个变量，还可以估计各个变量的影响大小；缺点则是需要的分组量比较大，以及假设这些变量和效应量之间是线性关系。亚组分析则不需要这些前提。
+
+**2.发表偏倚**
+Meta分析的数据都来自于已发表的文章，而科学期刊都更倾向于发表试验结果为阳性的试验，那些阴性结果的试验则较难获得。所以Meta中有必要说明其纳入文献是否存在发表偏倚的问题。在漏斗图中，两侧基本对称可以说明“高效应”和“低效应”的试验数量一致，不存在发表偏倚的问题。
+
+[![w3rFH.md.png](https://e.im5i.com/2021/07/16/w3rFH.md.png)](https://macimg.com/image/w3rFH)
+## 参考资料
+<div id="refer"></div>
+
+[1] Harrer, M., Cuijpers, P., Furukawa, T.A., & Ebert, D.D. (2021). Doing Meta-Analysis with R: A Hands-On Guide. Boca Raton, FL and London: Chapmann & Hall/CRC Press. ISBN 978-0-367-61007-4.
+
+[2] Glass, Gene V. 1976. “Primary, Secondary, and Meta-Analysis of Research.” Educational Researcher 5 (10): 3–8.
+
+[3] 陈希孺编著. 概率论与数理统计. 合肥：中国科学技术大学出版社, 2009(5) :40.
 
 
 
